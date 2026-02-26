@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Local Mermaid Renderer</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: false, theme: 'default' });
+
+        const renderDiagram = async () => {
+            const container = document.getElementById('output');
+            // Grabs the code after the '#' in the URL and decodes it
+            const code = decodeURIComponent(window.location.hash.substring(1));
+            
+            if (!code) {
+                container.innerHTML = "<h3>Add your mermaid code after the # in the URL!</h3><p>Example: <i>mermaid-viewer.html#graph TD%0AA-->B</i></p>";
+                return;
+            }
+
+            try {
+                // Renders the graph dynamically
+                const { svg } = await mermaid.render('mermaid-svg', code);
+                container.innerHTML = svg;
+            } catch (error) {
+                container.innerHTML = `<p style="color:red">Error rendering diagram:</p><pre>${error}</pre>`;
+            }
+        };
+
+        window.onload = renderDiagram;
+        // Re-render automatically if you change the URL in the address bar
+        window.addEventListener('hashchange', renderDiagram);
+    </script>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }
+        #output { border: 1px solid #ccc; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <div id="output">Loading...</div>
+</body>
+</html>
